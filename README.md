@@ -59,6 +59,12 @@ pipx install dpi-probe            # or: pip install dpi-probe
 pipx install 'dpi-probe[deep]'    # with scapy, for --deep TTL forensics
 ```
 
+On Arch-based distros (PKGBUILD under [`packaging/aur/`](packaging/aur/)):
+
+```bash
+yay -S dpi-probe                  # python-scapy is an optional dep for --deep
+```
+
 From source:
 
 ```bash
