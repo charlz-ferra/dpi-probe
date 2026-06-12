@@ -83,6 +83,18 @@ dpi-probe myproxy.example.net --json | jq -e '.verdict=="clean"' >/dev/null || n
 **Exit code:** `0` clean, `1` interference detected (`sni_blocked` / `rst_injected`
 / `port_blocked` / `tls_interference`), `2` on a usage error.
 
+### Man page & shell completions
+
+The repo ships `dpi-probe.1` and bash/zsh/fish completions under `completions/`
+(pip doesn't place these automatically):
+
+```bash
+sudo install -Dm644 dpi-probe.1 /usr/local/share/man/man1/dpi-probe.1
+sudo install -Dm644 completions/dpi-probe.fish /usr/share/fish/vendor_completions.d/dpi-probe.fish
+sudo install -Dm644 completions/dpi-probe.bash /usr/share/bash-completion/completions/dpi-probe
+sudo install -Dm644 completions/_dpi-probe /usr/share/zsh/site-functions/_dpi-probe
+```
+
 ## Why this exists
 
 VLESS+Reality, Hysteria2, and friends are an arms race against DPI. When an

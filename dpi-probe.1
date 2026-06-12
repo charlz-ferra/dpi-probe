@@ -1,0 +1,108 @@
+.TH DPI-PROBE 1 "June 2026" "dpi-probe 1.0.0" "User Commands"
+.SH NAME
+dpi-probe \- detect DPI interference and RST injection from your vantage point
+.SH SYNOPSIS
+.B dpi-probe
+.I HOST
+.RB [ \-p | \-\-port
+.IR PORT ]
+.RB [ \-\-sni
+.IR NAME ]
+.RB [ \-\-benign\-sni
+.IR NAME ]
+.RB [ \-\-deep ]
+.RB [ \-\-timeout
+.IR SECS ]
+.RB [ \-\-json ]
+.RB [ \-\-no\-color ]
+.SH DESCRIPTION
+.B dpi-probe
+tells you whether a censoring network is actively interfering with a connection,
+and how \(em from your side of the wall, without needing access to the server.
+.PP
+Its first tier is an SNI differential: two TLS handshakes to the same host, one
+carrying a benign control SNI and one carrying the name you care about. If the
+benign handshake completes but the target one is reset or silently dropped, the
+block is keyed on the SNI \(em textbook deep packet inspection. If plain TCP
+itself never completes, it is an IP or port block, not DPI.
+.PP
+With
+.BR \-\-deep ,
+a second tier inspects packets: a forged RST from a censorship middlebox almost
+never matches the server's network distance, so its IP TTL betrays it.
+.B dpi-probe
+learns the server's true TTL from the genuine SYN-ACK and flags any RST whose
+TTL implies a closer, forged origin. This tier needs
+.BR scapy (1)
+and root.
+.SH OPTIONS
+.TP
+.I HOST
+The target host: your proxy or server, or any host whose path you want to test.
+.TP
+.BI \-p ", " \-\-port " PORT"
+Target port (default: 443).
+.TP
+.BI \-\-sni " NAME"
+The SNI you actually care about \(em the one a censor might block. Defaults to
+.IR HOST .
+.TP
+.BI \-\-benign\-sni " NAME"
+The control SNI assumed not to be blocked (default:
+.IR www.example.com ).
+.TP
+.B \-\-deep
+Enable packet-level RST-injection forensics. Requires root and the
+.B deep
+extra
+.RB ( "pip install 'dpi-probe[deep]'" ).
+.TP
+.BI \-\-timeout " SECS"
+Per-probe timeout in seconds (default: 5).
+.TP
+.B \-\-json
+Emit machine-readable JSON.
+.TP
+.B \-\-no\-color
+Strip ANSI escapes.
+.TP
+.BR \-V ", " \-\-version
+Print the version and exit.
+.SH "VERDICTS"
+.B clean
+\(em no interference from here.
+.B sni_blocked
+\(em benign SNI works, target SNI reset or dropped.
+.B rst_injected
+\(em a forged RST caught by its TTL.
+.B port_blocked
+\(em TCP never completed.
+.B tls_interference
+\(em all TLS fails regardless of SNI.
+.B inconclusive
+\(em cause could not be isolated.
+.SH "EXIT STATUS"
+.TP
+.B 0
+Clean.
+.TP
+.B 1
+Interference detected.
+.TP
+.B 2
+Usage error.
+.SH EXAMPLES
+.TP
+Test a specific masquerade SNI with packet forensics:
+.B sudo dpi-probe myproxy.example.net \-\-sni www.microsoft.com \-\-deep
+.TP
+Alert when an endpoint starts getting tampered with:
+.B dpi-probe myproxy.example.net \-\-json | jq \-e '.verdict == "clean"'
+.SH "SEE ALSO"
+.BR scapy (1)
+.PP
+Project home:
+.UR https://github.com/charlz-ferra/dpi-probe
+.UE
+.SH AUTHOR
+charlz-ferra

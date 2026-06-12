@@ -1,0 +1,13 @@
+#compdef dpi-probe
+# zsh completion for dpi-probe
+_arguments \
+	'(-p --port)'{-p,--port}'[target port (default 443)]:port:' \
+	'--sni[SNI to test (the one a censor might block)]:sni:' \
+	'--benign-sni[control SNI assumed un-blocked]:sni:' \
+	'--deep[packet-level RST-injection forensics (root)]' \
+	'--timeout[per-probe timeout in seconds]:seconds:' \
+	'--json[machine-readable JSON output]' \
+	'--no-color[strip ANSI colors]' \
+	'(-h --help)'{-h,--help}'[show usage and exit]' \
+	'(-V --version)'{-V,--version}'[show version and exit]' \
+	'1:host:'
