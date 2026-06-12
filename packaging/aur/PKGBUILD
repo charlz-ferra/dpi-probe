@@ -1,0 +1,28 @@
+# Maintainer: charlz-ferra <281660350+charlz-ferra@users.noreply.github.com>
+pkgname=dpi-probe
+pkgver=1.1.0
+pkgrel=1
+pkgdesc="Detect DPI interference and RST injection from your vantage point"
+arch=('any')
+url="https://github.com/charlz-ferra/dpi-probe"
+license=('MIT')
+depends=('python')
+optdepends=('python-scapy: --deep RST-injection forensics (needs root)')
+makedepends=('python-build' 'python-installer' 'python-wheel' 'python-hatchling')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('1a5da67610095b7bfc696be40724d26ce16cbd5cd20b4f717d6c9dc193d2c1c6')
+
+build() {
+	cd "$pkgname-$pkgver"
+	python -m build --wheel --no-isolation
+}
+
+package() {
+	cd "$pkgname-$pkgver"
+	python -m installer --destdir="$pkgdir" dist/*.whl
+	install -Dm644 dpi-probe.1 "$pkgdir/usr/share/man/man1/dpi-probe.1"
+	install -Dm644 completions/dpi-probe.bash "$pkgdir/usr/share/bash-completion/completions/dpi-probe"
+	install -Dm644 completions/dpi-probe.fish "$pkgdir/usr/share/fish/vendor_completions.d/dpi-probe.fish"
+	install -Dm644 completions/_dpi-probe "$pkgdir/usr/share/zsh/site-functions/_dpi-probe"
+	install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
