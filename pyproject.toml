@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "dpi-probe"
-version = "1.0.0"
+version = "1.1.0"
 description = "Detect DPI interference and RST injection from your vantage point"
 readme = "README.md"
 requires-python = ">=3.9"
